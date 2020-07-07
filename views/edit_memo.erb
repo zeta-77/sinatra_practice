@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+<html lang="ja">
+
+<head>
+  <meta charset="utf-8" />
+  <title>編集画面</title>
+  <link rel="stylesheet" href="../style_edit.css">
+</head>
+
+<body>
+  <h1>メモアプリ</h1>
+
+  <form action=<%= "/edit_memo/#{@file_name}" %> method="post">
+    <input type="hidden" name="_method" value="patch">
+    <textarea name="text" rows="15"><%= @content %></textarea>
+    <p class="update_button"><input type="submit" value="変更"></p>
+  </form>
+
+</body>
+</html>

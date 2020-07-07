@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="ja">
+
+<head>
+  <meta charset="utf-8" />
+  <title>トップ画面</title>
+  <link rel="stylesheet" href="style_top.css">
+</head>
+
+<body>
+  <div class="title-line">
+    <h1>メモアプリ</h1>
+    <div class="add-button">
+      <form action="new_memo" method="get">
+        <p><input type="submit" value="追加"></p>
+      </form>
+    </div>
+  </div>
+
+  <ul>
+    <% @file_hash.each do |key, value| %>
+    <li>
+    <a href=<%= "/show/#{key}" %>><%= value %></a>
+    </li>
+    <% end %>
+  </ul>
+
+  </body>
+</html>
