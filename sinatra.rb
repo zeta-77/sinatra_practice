@@ -16,7 +16,6 @@ def make_file_hash(project_dir)
 end
 
 # 【main】
-enable :method_override
 project_dir = Dir.pwd
 memo_files = {} 
 
@@ -31,7 +30,6 @@ get '/top' do
   memo_files = make_file_hash(project_dir) # key:１行目　value:ファイル名
   @file_hash = memo_files
   erb :top
-  # display_top(memo_files)
 end
 
 post '/save_new_memo' do
@@ -60,14 +58,14 @@ get '/show/:file_name' do
   erb :show_memo
 end
 
-get '/edit_memo/:file_name' do
+get '/memos/:file_name' do
   file = File.open('memo/' + params[:file_name], 'r')
   @file_name = params[:file_name]
   @content = file.read  
   erb :edit_memo
 end
 
-patch '/edit_memo/:file_name' do
+patch '/memos/:file_name' do
   # 対象ファイル削除
   File.delete('./memo/' + params[:file_name])
   # ファイルの保存　→　ファイル名 = memo+連番
