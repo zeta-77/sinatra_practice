@@ -12,7 +12,7 @@
   <p class="memo_text"><%= @content %></p>
 
   <div class="form_button">
-    <form action=<%= "../edit_memo/#{@file_name}" %> method="get">
+    <form action=<%= "../memos/#{@file_name}" %> method="get">
       <p><input type="submit" value="変更"></p>
     </form>
     <form action=<%= "../selected_memo/#{@file_name}" %> method="post">
