@@ -16,7 +16,6 @@ def make_file_hash(project_dir)
 end
 
 # 【main】
-enable :method_override
 project_dir = Dir.pwd
 memo_files = {} 
 
@@ -31,7 +30,6 @@ get '/top' do
   memo_files = make_file_hash(project_dir) # key:１行目　value:ファイル名
   @file_hash = memo_files
   erb :top
-  # display_top(memo_files)
 end
 
 post '/save_new_memo' do
