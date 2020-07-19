@@ -9,13 +9,13 @@
 
 <body>
   <h1>メモアプリ</h1>
-  <p class="memo_text"><%= @content %></p>
+  <p class="memo_text"><%= @contents %></p>
 
   <div class="form_button">
-    <form action=<%= "../memos/#{@file_name}" %> method="get">
+    <form action=<%= "../memos/#{@id}" %> method="get">
       <p><input type="submit" value="変更"></p>
     </form>
-    <form action=<%= "../selected_memo/#{@file_name}" %> method="post">
+    <form action=<%= "../selected_memo/#{@id}" %> method="post">
       <input type="hidden" name="_method" value="delete">
       <p><input type="submit" value="削除"></p>
     </form>

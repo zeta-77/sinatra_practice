@@ -10,9 +10,9 @@
 <body>
   <h1>メモアプリ</h1>
 
-  <form action=<%= "/memos/#{@file_name}" %> method="post">
+  <form action=<%= "/memos/#{@id}" %> method="post">
     <input type="hidden" name="_method" value="patch">
-    <textarea name="text" rows="15"><%= @content %></textarea>
+    <textarea name="text" rows="15"><%= @contents %></textarea>
     <p class="update_button"><input type="submit" value="変更"></p>
   </form>
 
