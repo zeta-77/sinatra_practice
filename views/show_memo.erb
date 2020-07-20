@@ -12,10 +12,10 @@
   <p class="memo_text"><%= @contents %></p>
 
   <div class="form_button">
-    <form action=<%= "../memos/#{@id}" %> method="get">
+    <form action=<%= "../editing_page/#{@id}" %> method="get">
       <p><input type="submit" value="変更"></p>
     </form>
-    <form action=<%= "../selected_memo/#{@id}" %> method="post">
+    <form action=<%= "../memos/#{@id}" %> method="post">
       <input type="hidden" name="_method" value="delete">
       <p><input type="submit" value="削除"></p>
     </form>

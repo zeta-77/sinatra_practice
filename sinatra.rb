@@ -30,7 +30,7 @@ get '/top' do
   erb :top
 end
 
-post '/save_new_memo' do
+post '/new_memo' do
   # DBに保存
   sql = "INSERT INTO memos (contents) VALUES ('" + params[:text] + "')"
   connection = PG::connect(:host => "localhost", :user => "sinatra", :password => "yuyuyuyu", :dbname => "sinatra")
@@ -46,7 +46,7 @@ get '/new_memo' do
   erb :new_memo
 end
 
-get '/show/:id' do
+get '/memos/:id' do
   sql = "select * from memos where id = '" + params[:id] + "'"
   # DBからデータを取得
   connection = PG::connect(:host => "localhost", :user => "sinatra", :password => "yuyuyuyu", :dbname => "sinatra")
@@ -60,7 +60,7 @@ get '/show/:id' do
   erb :show_memo
 end
 
-get '/memos/:id' do
+get '/editing_page/:id' do
   sql = "select * from memos where id = '" + params[:id] + "'"
   # DBからデータを取得
   connection = PG::connect(:host => "localhost", :user => "sinatra", :password => "yuyuyuyu", :dbname => "sinatra")
@@ -86,7 +86,7 @@ patch '/memos/:id' do
   redirect to ('/top')
 end
 
-delete '/selected_memo/:id' do
+delete '/memos/:id' do
   sql = "delete from memos where id = '" + params[:id] + "'"
   # DBからデータを取得
   connection = PG::connect(:host => "localhost", :user => "sinatra", :password => "yuyuyuyu", :dbname => "sinatra")
