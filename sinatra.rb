@@ -30,7 +30,7 @@ get '/top' do
   erb :top
 end
 
-post '/new_memo' do
+post '/save_new_memo' do
   # DBに保存
   sql = "INSERT INTO memos (contents) VALUES ('" + params[:text] + "')"
   connection = PG::connect(:host => "localhost", :user => "sinatra", :password => "yuyuyuyu", :dbname => "sinatra")
