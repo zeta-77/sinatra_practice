@@ -31,14 +31,9 @@ get '/top' do
 end
 
 post '/new_memo' do
-  # DBに保存
-  sql = "INSERT INTO memos (contents) VALUES ('" + params[:text] + "')"
   connection = PG::connect(:host => "localhost", :user => "sinatra", :password => "yuyuyuyu", :dbname => "sinatra")
-  begin
-    result = connection.exec(sql)
-  ensure
-    connection.finish
-  end
+  connection.prepare('statement', 'insert into memos (contents) values ($1)')
+  connection.exec_prepared('statement', [ params[:text] ])
   redirect to ('/top')
 end
 
@@ -75,14 +70,9 @@ get '/editing_page/:id' do
 end
 
 patch '/memos/:id' do
-  sql = "UPDATE memos SET contents = '" + params[:text] + "' WHERE id = " + params[:id]
-  # DBからデータを取得
   connection = PG::connect(:host => "localhost", :user => "sinatra", :password => "yuyuyuyu", :dbname => "sinatra")
-  begin
-    result = connection.exec(sql)
-  ensure
-    connection.finish # コネクションを切断
-  end
+  connection.prepare('statement', 'UPDATE memos SET contents = $1 WHERE id = $2')
+  connection.exec_prepared('statement', [ params[:text], params[:id] ])
   redirect to ('/top')
 end
 
