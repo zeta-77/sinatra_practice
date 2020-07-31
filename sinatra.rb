@@ -12,10 +12,15 @@ def display_top(file_hash)
   erb :top
 end
 
+# DBへの接続
+def connect_db
+  PG::connect(:host => "localhost", :user => "sinatra", :password => "yuyuyuyu", :dbname => "sinatra")
+end
+
 get '/top' do
   memos = {}
   # DBからデータを取得
-  connection = PG::connect(:host => "localhost", :user => "sinatra", :password => "yuyuyuyu", :dbname => "sinatra")
+  connection = connect_db
   begin
     result = connection.exec("select * from memos")
     result.each do |value|
@@ -31,7 +36,7 @@ get '/top' do
 end
 
 post '/new_memo' do
-  connection = PG::connect(:host => "localhost", :user => "sinatra", :password => "yuyuyuyu", :dbname => "sinatra")
+  connection = connect_db
   connection.prepare('statement', 'insert into memos (contents) values ($1)')
   connection.exec_prepared('statement', [ params[:text] ])
   redirect to ('/top')
@@ -44,7 +49,7 @@ end
 get '/memos/:id' do
   sql = "select * from memos where id = '" + params[:id] + "'"
   # DBからデータを取得
-  connection = PG::connect(:host => "localhost", :user => "sinatra", :password => "yuyuyuyu", :dbname => "sinatra")
+  connection = connect_db
   begin
     result = connection.exec(sql)
     @id = result[0]['id']
@@ -58,7 +63,7 @@ end
 get '/editing_page/:id' do
   sql = "select * from memos where id = '" + params[:id] + "'"
   # DBからデータを取得
-  connection = PG::connect(:host => "localhost", :user => "sinatra", :password => "yuyuyuyu", :dbname => "sinatra")
+  connection = connect_db
   begin
     result = connection.exec(sql)
     @id = result[0]['id']
@@ -70,7 +75,7 @@ get '/editing_page/:id' do
 end
 
 patch '/memos/:id' do
-  connection = PG::connect(:host => "localhost", :user => "sinatra", :password => "yuyuyuyu", :dbname => "sinatra")
+  connection = connect_db
   connection.prepare('statement', 'UPDATE memos SET contents = $1 WHERE id = $2')
   connection.exec_prepared('statement', [ params[:text], params[:id] ])
   redirect to ('/top')
@@ -79,7 +84,7 @@ end
 delete '/memos/:id' do
   sql = "delete from memos where id = '" + params[:id] + "'"
   # DBからデータを取得
-  connection = PG::connect(:host => "localhost", :user => "sinatra", :password => "yuyuyuyu", :dbname => "sinatra")
+  connection = connect_db
   begin
     result = connection.exec(sql)
   ensure
