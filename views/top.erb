@@ -4,7 +4,7 @@
 <head>
   <meta charset="utf-8" />
   <title>トップ画面</title>
-  <link rel="stylesheet" href="style_top.css">
+  <link rel="stylesheet" href="/style_top.css">
 </head>
 
 <body>
@@ -20,7 +20,7 @@
   <ul>
     <% @file_hash.each do |key, value| %>
     <li>
-    <a href=<%= "/show/#{key}" %>><%= value %></a>
+    <a href=<%= "/memos/#{key}" %>><%= value %></a>
     </li>
     <% end %>
   </ul>

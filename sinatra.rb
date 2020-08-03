@@ -1,23 +1,10 @@
 require "sinatra"
 require "sinatra/reloader"
-
-# ファイルハッシュの生成 → key:ファイル名　value:１行目（タイトル）
-def make_file_hash(project_dir)
-  memo_files = {}
-  Dir.chdir(project_dir + '/memo')
-  Dir.glob('*').sort.each do |file_name|
-    file = File.open(file_name, 'r')
-    temp = file.gets
-    first_line = temp.gsub("\n", '')
-    memo_files[file_name] = first_line 
-  end
-  Dir.chdir(project_dir)
-  memo_files
-end
+require 'pg'
 
 # 【main】
 project_dir = Dir.pwd
-memo_files = {} 
+memo_files = {}
 
 # トップ画面の表示：メモの一覧表示
 def display_top(file_hash)
@@ -25,25 +12,33 @@ def display_top(file_hash)
   erb :top
 end
 
+# DBへの接続
+def connect_db
+  PG::connect(:host => "localhost", :user => "sinatra", :password => "yuyuyuyu", :dbname => "sinatra")
+end
+
 get '/top' do
-  # ファイルの読み込み　→　key:タイトル　value:ファイル名
-  memo_files = make_file_hash(project_dir) # key:１行目　value:ファイル名
-  @file_hash = memo_files
+  memos = {}
+  # DBからデータを取得
+  connection = connect_db
+  begin
+    result = connection.exec("select * from memos")
+    result.each do |value|
+      memo_rows = value['contents'].split("\r")
+      memos[value['id']] = memo_rows[0]
+    end
+  ensure
+    connection.finish # コネクションを切断
+  end
+  # ファイルの読み込み　→　key:メモのID　value:メモタイトル
+  @file_hash = memos
   erb :top
 end
 
-post '/save_new_memo' do
-  # ファイル名の生成
-  Dir.chdir('./memo')
-  files = []
-  Dir.glob('*').each do |file|
-    files.push(file.gsub('memo','').to_i)
-  end
-  # ファイルの保存　→　ファイル名 = memo+連番
-  file_name = 'memo' + (files.max + 1).to_s.rjust(5, '0')
-  File.open(file_name, 'w'){|f|
-    f.write(params[:text])
-  }
+post '/new_memo' do
+  connection = connect_db
+  connection.prepare('statement', 'insert into memos (contents) values ($1)')
+  connection.exec_prepared('statement', [ params[:text] ])
   redirect to ('/top')
 end
 
@@ -51,32 +46,49 @@ get '/new_memo' do
   erb :new_memo
 end
 
-get '/show/:file_name' do
-  file = File.open('memo/' + params[:file_name], 'r')
-  @content = file.read.gsub("\n","<br>")
-  @file_name = params[:file_name]
+get '/memos/:id' do
+  sql = "select * from memos where id = '" + params[:id] + "'"
+  # DBからデータを取得
+  connection = connect_db
+  begin
+    result = connection.exec(sql)
+    @id = result[0]['id']
+    @contents = result[0]['contents'].gsub("\n","<br>")
+  ensure
+    connection.finish # コネクションを切断
+  end
   erb :show_memo
 end
 
-get '/memos/:file_name' do
-  file = File.open('memo/' + params[:file_name], 'r')
-  @file_name = params[:file_name]
-  @content = file.read  
+get '/editing_page/:id' do
+  sql = "select * from memos where id = '" + params[:id] + "'"
+  # DBからデータを取得
+  connection = connect_db
+  begin
+    result = connection.exec(sql)
+    @id = result[0]['id']
+    @contents = result[0]['contents']
+  ensure
+    connection.finish # コネクションを切断
+  end
   erb :edit_memo
 end
 
-patch '/memos/:file_name' do
-  # 対象ファイル削除
-  File.delete('./memo/' + params[:file_name])
-  # ファイルの保存　→　ファイル名 = memo+連番
-  File.open('memo/' + params[:file_name], 'w'){|f|
-    f.write(params[:text])
-  }
+patch '/memos/:id' do
+  connection = connect_db
+  connection.prepare('statement', 'UPDATE memos SET contents = $1 WHERE id = $2')
+  connection.exec_prepared('statement', [ params[:text], params[:id] ])
   redirect to ('/top')
 end
 
-delete '/selected_memo/:file_name' do
-  File.delete('./memo/' + params[:file_name])
-  @file_hash = make_file_hash(project_dir)
+delete '/memos/:id' do
+  sql = "delete from memos where id = '" + params[:id] + "'"
+  # DBからデータを取得
+  connection = connect_db
+  begin
+    result = connection.exec(sql)
+  ensure
+    connection.finish # コネクションを切断
+  end
   redirect to ('/top')
 end
